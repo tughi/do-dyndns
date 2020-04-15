@@ -44,10 +44,13 @@ def update_record(node):
     if node in RECORDS:
         logger.info(f"Defined node: {node}")
 
+        remote_address = request.headers.get('X-Real-IP', request.remote_addr)
+        logger.info(f"Remote address: {remote_address}")
+
         api_response = requests.put(
             f'https://api.digitalocean.com/v2/domains/{DOMAIN}/records/{RECORDS[node]}',
             json={
-                'data': request.remote_addr,
+                'data': remote_address,
             },
             headers={
                 'Content-Type': 'application/json',
