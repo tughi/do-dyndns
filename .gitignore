@@ -1,5 +1,5 @@
 /config.py
-
+/docker-compose.override.yaml
 /.env
 /.idea
 /.virtualenv
