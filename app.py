@@ -8,9 +8,30 @@ from config import API_TOKEN
 from config import DOMAIN
 from config import RECORDS
 
-logger = logging.getLogger(__file__)
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+
+
+@app.cli.command('list-all-records')
+def command():
+    api_response = requests.get(
+        f'https://api.digitalocean.com/v2/domains/{DOMAIN}/records',
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {API_TOKEN}'
+        }
+    )
+    api_response.raise_for_status()
+
+    for record in api_response.json().get('domain_records'):
+        record_type = record['type']
+        if record_type in ('A', 'AAAA'):
+            record_name = record['name']
+            if record_name != '@':
+                logger.info(f"{record_name}: id={record['id']}, addr={record['data']}")
 
 
 @app.errorhandler(404)
